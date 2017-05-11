@@ -1,0 +1,38 @@
+
+https:
+  Account: qq1624646454
+  Password: ljl常用六位数
+
+git:
+  Account and Password are over rsa certification files
+  Modified .git/config
+  
+  Original .git/config
+  -----------------------------------------
+  1 [core]
+  2     repositoryformatversion = 0
+  3     filemode = true
+  4     bare = false
+  5     logallrefupdates = true
+  6 [remote "origin"]
+  7     fetch = +refs/heads/*:refs/remotes/origin/*
+  8     url = https://github.com/qq1624646454/philipstv_tpv.git
+  9 [branch "master"]
+ 10     remote = origin
+ 11     merge = refs/heads/master
+ 
+
+  Changed .git/config
+  ----------------------------------------
+  1 [core]
+  2     repositoryformatversion = 0
+  3     filemode = true
+  4     bare = false
+  5     logallrefupdates = true
+  6 [remote "origin"]
+  7     fetch = +refs/heads/*:refs/remotes/origin/*
+  8     url = git@github.com:qq1624646454/philipstv_tpv.git
+  9 [branch "master"]
+ 10     remote = origin
+ 11     merge = refs/heads/master
+
