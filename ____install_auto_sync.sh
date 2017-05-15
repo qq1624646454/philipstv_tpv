@@ -11,14 +11,14 @@ JLLPATH=$(cd ${JLLPATH};pwd)
 function Fn_Setup_AutoSync()
 {
     crontab -l  > tsk.crontab  2>/dev/null
-    if [ -e "${JLLPATH}/._______auto_sync_with_github__in_crontab.sh" ]; then
+    if [ -e "${JLLPATH}/._______auto_sync_by_GIT__in_crontab.sh" ]; then
         __chk_if_exist=$(cat tsk.crontab \
-                         | grep -E "${JLLPATH}/._______auto_sync_with_github__in_crontab.sh")
+                         | grep -E "${JLLPATH}/._______auto_sync_by_GIT__in_crontab.sh")
         if [ x"${__chk_if_exist}" = x ]; then
 cat >>tsk.crontab<<EOF
 
 # m  h  dom mon dow command
-  30 23 *   *   *   ${JLLPATH}/._______auto_sync_with_github__in_crontab.sh
+  30 23 *   *   *   ${JLLPATH}/._______auto_sync_by_GIT__in_crontab.sh
 
 EOF
             crontab tsk.crontab
