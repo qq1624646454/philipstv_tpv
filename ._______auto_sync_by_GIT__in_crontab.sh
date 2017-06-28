@@ -5,7 +5,79 @@
 #   Author:       jielong.lin
 #   Email:        493164984@qq.com
 #   DateTime:     2017-05-11 14:34:27
-#   ModifiedTime: 2017-05-15 14:03:58
+#   ModifiedTime: 2017-06-28 14:24:45
+
+# _FN_retrieve_git_commits_by_GitURL \
+#     "https://github.com/qq1624646454/jllutils/commits/master"
+function _FN_retrieve_git_commits_by_GitURL()
+{
+    if [ x"$1" = x ]; then
+        echo
+        echo "JLL-return:: unknown Git URL parameter $1"
+        echo
+        return
+    fi
+    __HtmlFile=.git_commits.html
+    # w3m https://github.com/qq1624646454/jllutils/commits/master > git_commits.html
+    echo
+    echo "JLL-network:: w3m $1"
+    w3m $1 > ${__HtmlFile}
+    echo
+    echo "JLL-response:: parsing response for retrieving all git commits"
+    echo
+    __CTXLine="$(cat ${__HtmlFile} \
+               | grep -n -A 1 -E '^[ \t]{0,}.*[ \t]{1,}committed[ \t]{1,}' --color=never)"
+    rm -rf ${__HtmlFile} 2>/dev/null
+
+    OldIFS="${IFS}"
+    IFS=$'\n'
+    for __CTXLn in ${__CTXLine}; do
+        __CTXL=$(echo "${__CTXLn}" | grep -E '^[0-9]{1,}-[ \t]{1,}[0-9a-fA-F]{7,}')
+        if [ x"${__CTXL}" != x ]; then
+            __lstCommittedIDs[__iCommittedIDs++]="${__CTXL##* }"
+        fi
+    done
+    IFS="${OldIFS}"
+
+    for((__i=0;__i<__iCommittedIDs;__i++)) {
+        echo "JLL-descend:: commit.id=${__lstCommittedIDs[__i]}"
+    }
+
+    [ x"${__CTXLine}" != x ] && unset __CTXLine
+}
+
+function _FN_is_align_with_git_remote()
+{
+    if [ x"${__iCommittedIDs}" != x -a ${__iCommittedIDs} -gt 0 ]; then
+        __local_commitID=$(git log --oneline | head -n 1)
+        __local_commitID="${__local_commitID%% *}"
+        if [ x"${__local_commitID}" != x ]; then
+            __isReturn=0
+            echo "JLL-check:: local.lastest.commit.id --- remote.commit.id "
+            for((__k=0;__k<__iCommittedIDs;__k++)) {
+                echo "JLL-check:: ${__local_commitID} --- ${__lstCommittedIDs[__k]}"
+                if [ x"${__local_commitID}" = x"${__lstCommittedIDs[__k]}" ]; then
+                    __isReturn=1
+                    echo "JLL-check:: HIT at ${__local_commitID} --- ${__lstCommittedIDs[__k]}"
+                    break
+                fi
+            }
+            if [ x"${__isReturn}" = x"1" -a x"$1" != x ]; then
+                if [ x"${__local_commitID}" != x"${__lstCommittedIDs[0]}" ]; then
+                    eval $1=1
+                    return
+                fi
+                eval $1=0  # Has already aligned
+                return
+            fi
+        fi
+    fi
+    if  [ x"$1" != x ]; then # other cases should be best to align.
+        eval $1=1
+    fi
+}
+
+
 
 
 __ssh_package=.__ssh_R$(/bin/date +%Y_%m_%d__%H_%M_%S)
@@ -153,9 +225,24 @@ ${__GitCHANGE}
     /bin/echo                                                        >> _______auto_sync_by_GIT__in_crontab.log
   fi
 fi
+
+
+declare -a __lstCommittedIDs
+declare -i __iCommittedIDs=0
+
+_FN_retrieve_git_commits_by_GitURL "https://github.com/qq1624646454/jllutils/commits/master" \
+                                                                     >> _______auto_sync_by_GIT__in_crontab.log
+_FN_is_align_with_git_remote __isAlign  \
+                                                                     >> _______auto_sync_by_GIT__in_crontab.log
+[ x"${__lstCommittedIDs}" != x ] && unset __lstCommittedIDs
+[ x"${__iCommittedIDs}" != x ] && unset __iCommittedIDs
+
 /bin/echo                                                            >> _______auto_sync_by_GIT__in_crontab.log
+/bin/echo "Check if align with remote via __isAlign=${__isAlign}"    >> _______auto_sync_by_GIT__in_crontab.log
+if [ x"${__isAlign}" = x"1" ]; then
 /bin/echo "Pull Changes from '${__RemoteRepository}' by git pull "   >> _______auto_sync_by_GIT__in_crontab.log
 /usr/bin/git pull -f -u origin master                                >> _______auto_sync_by_GIT__in_crontab.log
+fi
 /usr/bin/git log | /usr/bin/head -n 4                                >> _______auto_sync_by_GIT__in_crontab.log
 /bin/echo                                                            >> _______auto_sync_by_GIT__in_crontab.log
 cd - >/dev/null
