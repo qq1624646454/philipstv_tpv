@@ -5,7 +5,7 @@
 #   Author:       jielong.lin
 #   Email:        493164984@qq.com
 #   DateTime:     2017-05-11 14:34:27
-#   ModifiedTime: 2017-06-30 16:33:36
+#   ModifiedTime: 2017-07-17 00:33:31
 
 # _FN_retrieve_git_commits_by_GitURL \
 #     "https://github.com/qq1624646454/jllutils/commits/master"
@@ -230,7 +230,7 @@ fi
 declare -a __lstCommittedIDs
 declare -i __iCommittedIDs=0
 
-_FN_retrieve_git_commits_by_GitURL "https://github.com/qq1624646454/jllutils/commits/master" \
+_FN_retrieve_git_commits_by_GitURL "https://github.com/qq1624646454/philipstv_tpv/commits/master" \
                                                                      >> _______auto_sync_by_GIT__in_crontab.log
 _FN_is_align_with_git_remote __isAlign  \
                                                                      >> _______auto_sync_by_GIT__in_crontab.log
