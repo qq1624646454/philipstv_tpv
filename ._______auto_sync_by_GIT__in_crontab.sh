@@ -198,11 +198,11 @@ if [ ! -e "${JLLPATH}/.git" ]; then
     /bin/exit 0
 fi
 
+cd ${JLLPATH}
 __RemoteRepository=$(/usr/bin/git remote show origin | /bin/grep -E '^[ ]{0,}Push[ ]{1,}URL:')
 __RemoteRepository=${__RemoteRepository#*:}
 [ x"${__RemoteRepository}" = x ] && __RemoteRepository="remote.${JLLSELF}"
 
-cd ${JLLPATH}
 /bin/echo "synchronizing with ${__RemoteRepository} @${__DT}"        >  _______auto_sync_by_GIT__in_crontab.log
 __GitCHANGE="$(/usr/bin/git status -s)"
 if [ x"${__GitCHANGE}" != x ]; then
